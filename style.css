@@ -229,6 +229,53 @@ body {
   text-transform: uppercase;
 }
 
+.hero-start-btn {
+  margin: 10px auto 0;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 232, 190, 0.44);
+  color: #2d1809;
+  background: linear-gradient(95deg, #f4c670 0%, #ffd892 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  box-shadow: 0 14px 24px rgba(236, 173, 67, 0.35);
+  cursor: pointer;
+  transition: transform 0.32s ease, box-shadow 0.32s ease, filter 0.32s ease;
+}
+
+.hero-start-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  animation: nudgeDown 1.15s ease-in-out infinite;
+}
+
+.hero-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 30px rgba(236, 173, 67, 0.42);
+}
+
+.hero-start-btn:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+@keyframes nudgeDown {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
 .shimmer-text {
   position: relative;
   overflow: hidden;
@@ -767,6 +814,7 @@ body {
   .rise-dot,
   .hero-image,
   .hero-title,
+  .hero-start-btn svg,
   .shimmer-text::after,
   .shimmer-btn::after {
     animation: none !important;
