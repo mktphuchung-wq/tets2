@@ -8,8 +8,12 @@ const riverTrack = document.getElementById("riverTrack");
 const riseParticles = document.getElementById("riseParticles");
 const parallaxItems = Array.from(document.querySelectorAll("[data-parallax]"));
 const soundtrackFrame = document.getElementById("globalSoundtrack");
+const heroStartBtn = document.getElementById("heroStartBtn");
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let soundtrackWidget = null;
+let soundtrackReady = false;
+let soundtrackPendingPlay = false;
 
 if (scenes[0]) {
   scenes[0].classList.add("is-visible");
@@ -146,26 +150,45 @@ const addRiseParticles = () => {
   }
 };
 
+const requestSoundtrackPlay = () => {
+  soundtrackPendingPlay = true;
+  if (!soundtrackWidget || !soundtrackReady) return;
+
+  try {
+    soundtrackWidget.play();
+  } catch (error) {
+    // Browser policy can still block if user gesture is missing.
+  }
+};
+
+const scrollToIntroScene = () => {
+  if (!story || scenes.length < 2) return;
+
+  story.scrollTo({
+    top: scenes[1].offsetTop,
+    behavior: prefersReducedMotion ? "auto" : "smooth"
+  });
+};
+
+const bindHeroStartButton = () => {
+  if (!heroStartBtn) return;
+
+  heroStartBtn.addEventListener("click", () => {
+    requestSoundtrackPlay();
+    scrollToIntroScene();
+  });
+};
+
 const initGlobalSoundtrack = () => {
   if (!soundtrackFrame || !window.SC || typeof window.SC.Widget !== "function") return;
 
-  const widget = window.SC.Widget(soundtrackFrame);
-  const tryPlay = () => {
-    try {
-      widget.play();
-    } catch (error) {
-      // Browser autoplay policies can block sound until user interaction.
+  soundtrackWidget = window.SC.Widget(soundtrackFrame);
+  soundtrackWidget.bind(window.SC.Widget.Events.READY, () => {
+    soundtrackReady = true;
+    if (soundtrackPendingPlay) {
+      requestSoundtrackPlay();
     }
-  };
-
-  widget.bind(window.SC.Widget.Events.READY, tryPlay);
-
-  const resumeOnInteraction = () => {
-    tryPlay();
-  };
-
-  document.addEventListener("pointerdown", resumeOnInteraction, { once: true, passive: true });
-  document.addEventListener("keydown", resumeOnInteraction, { once: true });
+  });
 };
 
 let ticking = false;
@@ -181,6 +204,7 @@ const onScroll = () => {
 
 const init = () => {
   initGlobalSoundtrack();
+  bindHeroStartButton();
   initRiverLoop();
   addSparkles();
   addRiseParticles();
